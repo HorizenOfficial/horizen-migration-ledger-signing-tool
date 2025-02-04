@@ -10,7 +10,7 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
+  // FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -24,57 +24,63 @@ import { Textarea } from "@/app/components/ui/textarea";
 import SignatureDialog from "@/app/components/molecules/SignatureDialog";
 import { Separator } from "@/app/components/ui/separator";
 import useSigningForm from "@/app/hooks/useSigningForm";
-import {
-  deriveZenAddressFromPrivateKey,
-  isMainnetWif,
-  isPrivateKeyOnWifFormat,
-  isValidPrivateKey,
-} from "@/app/lib/privateKeysUtilities";
-import signMessageWithPrivateKey from "@/app/lib/signMessageWithPrivateKey";
+// import {
+//   deriveZenAddressFromPrivateKey,
+//   isMainnetWif,
+//   isPrivateKeyOnWifFormat,
+// } from "@/app/lib/privateKeysUtilities";
+// import signMessageWithPrivateKey from "@/app/lib/signMessageWithPrivateKey";
 import { useEffect, useState } from "react";
 
-function SigningToolWithPrivateKey() {
+// import { listen } from "@ledgerhq/logs";
+import Btc from "@ledgerhq/hw-app-btc";
+// import zencashjs from "zencashjs";
+ 
+// Keep this import if you want to use a Ledger Nano S/X/S Plus with the USB protocol and delete the @ledgerhq/hw-transport-webhid import
+//import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
+// Keep this import if you want to use a Ledger Nano S/X/S Plus with the HID protocol and delete the @ledgerhq/hw-transport-webusb import
+// import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function SigningToolWithPrivateKey({transport}: any) {
   const [showDialogSignature, setShowDialogSignature] = useState(false);
   const [zenAddress, setZenAddress] = useState("");
-  const [signature, setSignature] = useState("");
+  // const [signature, setSignature] = useState("");
+  const signature = '';
   const form = useSigningForm();
 
-  const { destinationAddress, privateKey, compressed, testnet } = form.watch();
+  const { destinationAddress } = form.watch();
   const MESSAGE_TO_SIGN = "ZENCLAIM" + destinationAddress;
 
-  useEffect(() => {
-    const isPrivateKeyWif = isPrivateKeyOnWifFormat(privateKey);
-    if (isPrivateKeyWif) {
-      form.setValue("testnet", !isMainnetWif(privateKey));
-    }
-  }, [form, privateKey]);
-
-  useEffect(() => {
-    if (isValidPrivateKey(privateKey)) {
-      const derivatedZenAddress = deriveZenAddressFromPrivateKey({
-        privateKey,
-        compressed,
-        testnet,
+  useEffect(()=> {
+    const getAddress = async() => {
+      const btc = new Btc({ transport });
+      btc.getWalletXpub({path: "44'/121'/0'/0/0", xpubVersion: 1}).then((key)=> {
+        console.log('xpub', key)
+        setZenAddress(key);
       });
-
-      setZenAddress(derivatedZenAddress);
     }
-  }, [privateKey, compressed, testnet]);
+
+    getAddress();
+
+  }, [transport])
 
   function onSubmit() {
-    const signature = signMessageWithPrivateKey({
-      message: MESSAGE_TO_SIGN,
-      privateKey: privateKey,
-      compressed: compressed,
-    });
-    setSignature(signature);
-    setShowDialogSignature(true);
+    console.log('onSubmit')
+
+
+    // const signature = signMessageWithPrivateKey({
+    //   message: MESSAGE_TO_SIGN,
+    //   compressed: compressed,
+    // });
+    // setSignature(signature);
+    // setShowDialogSignature(true);
   }
 
   return (
     <Card className="min-w-96 max-w-md">
       <CardHeader>
-        <CardTitle>Signing Tool With Private Key</CardTitle>
+        <CardTitle>Signing Tool for Ledger</CardTitle>
         <CardDescription>
           Fill in the form below to sign a message with your private key.
         </CardDescription>
@@ -83,23 +89,6 @@ function SigningToolWithPrivateKey() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="grid w-full items-center gap-4">
-              <FormField
-                control={form.control}
-                name="privateKey"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Private Key</FormLabel>
-                    <FormDescription>
-                      You can use a WIF or a HEX private key.
-                    </FormDescription>
-                    <FormControl>
-                      <Input placeholder="Private Key..." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <FormField
                 control={form.control}
                 name="destinationAddress"

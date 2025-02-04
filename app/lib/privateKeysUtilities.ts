@@ -23,25 +23,9 @@ function isMainnetWif(privateKeyWif: string): boolean {
   return prefix === zencashjs.config.mainnet.wif;
 }
 
-function isHex64(value: string): boolean {
-  return value.match(/^[0-9a-fA-F]{64}$/) !== null;
-}
-
-function isValidPrivateKey(privateKey: string): boolean {
-  // It's a valid private key if it's either:
-
-  // 1. WIF format
-  if (isPrivateKeyOnWifFormat(privateKey)) {
-    return true;
-  }
-
-  // 2. Hex format and 64 characters long
-  if (isHex64(privateKey)) {
-    return true;
-  }
-
-  return false;
-}
+// function isHex64(value: string): boolean {
+//   return value.match(/^[0-9a-fA-F]{64}$/) !== null;
+// }
 
 function deriveZenAddressFromPrivateKey({
   privateKey,
@@ -71,8 +55,6 @@ function deriveZenAddressFromPrivateKey({
 
 export {
   deriveZenAddressFromPrivateKey,
-  isHex64,
   isMainnetWif,
   isPrivateKeyOnWifFormat,
-  isValidPrivateKey,
 };

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Signing Tool with Private Key",
+  title: "Signing Tool For Ledger",
   description: "A simple tool to sign a message with a private key",
 };
 

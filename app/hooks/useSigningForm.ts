@@ -5,12 +5,10 @@ import { z } from "zod";
 import {
   compressedValidator,
   destinationAddressValidator,
-  privateKeyValidator,
   testnetValidator,
 } from "../lib/formValidator";
 
 const formSchema = z.object({
-  privateKey: privateKeyValidator,
   destinationAddress: destinationAddressValidator,
   testnet: testnetValidator,
   compressed: compressedValidator,
@@ -22,7 +20,6 @@ function useSigningForm() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      privateKey: "",
       destinationAddress: "0x",
       testnet: false,
       compressed: true,

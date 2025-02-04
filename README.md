@@ -1,8 +1,8 @@
-# Signing Tool with Private Key
+# Signing Tool for Ledger
 
 ## Overview
 
-The **Signing Tool with Private Key** is a tool designed to generate cryptographic signatures required for claiming funds through a claim portal. Users can input specific details, and the tool outputs a valid signature for the claim message.
+The **Signing Tool for Ledger** is a tool designed to generate cryptographic signatures required for claiming funds through a claim portal. Users can input specific details, and the tool outputs a valid signature for the claim message.
 
 ### Features
 
