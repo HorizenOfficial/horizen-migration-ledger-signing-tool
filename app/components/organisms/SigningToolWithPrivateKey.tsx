@@ -55,8 +55,8 @@ function SigningToolWithPrivateKey({transport}: any) {
   useEffect(()=> {
     const getAddress = async() => {
       const btc = new Btc({ transport });
-      btc.getWalletXpub({path: "44'/121'/0'/0/0", xpubVersion: 1}).then((key)=> {
-        console.log('xpub', key)
+      btc.getWalletPublicKey("44'/121'/0'/0/0").then((key)=> {
+        console.log('pubkey', key)
         setZenAddress(key);
       });
     }
