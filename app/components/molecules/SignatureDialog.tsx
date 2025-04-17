@@ -36,31 +36,39 @@ function SignatureDialog({
     }
   };
 
+  const dialogContent = (
+    !signature ? <DialogDescription>Confirm the message hash on your Ledger device</DialogDescription> : (
+      <>
+      <DialogHeader>
+      <DialogTitle>Your signed message</DialogTitle>
+      <DialogDescription>
+        Use the signed message below to claim your ZEN.
+      </DialogDescription>
+    </DialogHeader>
+    <div>
+      <Textarea disabled value={signature} />
+    </div>
+    <DialogFooter>
+      <Button
+        className="mt-2 md:mt-0"
+        disabled={isCopied}
+        variant={"outline"}
+        onClick={handleCopyToClipboard}
+      >
+        {isCopied ? "Copied!" : "Copy"}
+      </Button>
+      <DialogClose asChild>
+        <Button>Close</Button>
+      </DialogClose>
+    </DialogFooter>
+    </>
+    )
+  )
+
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Your signed message</DialogTitle>
-          <DialogDescription>
-            Use the signed message below to claim your ZEN.
-          </DialogDescription>
-        </DialogHeader>
-        <div>
-          <Textarea disabled value={signature} />
-        </div>
-        <DialogFooter>
-          <Button
-            className="mt-2 md:mt-0"
-            disabled={isCopied}
-            variant={"outline"}
-            onClick={handleCopyToClipboard}
-          >
-            {isCopied ? "Copied!" : "Copy"}
-          </Button>
-          <DialogClose asChild>
-            <Button>Close</Button>
-          </DialogClose>
-        </DialogFooter>
+        {dialogContent}
       </DialogContent>
     </Dialog>
   );

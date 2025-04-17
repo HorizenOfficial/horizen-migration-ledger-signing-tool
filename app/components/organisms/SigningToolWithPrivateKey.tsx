@@ -30,7 +30,7 @@ import useSigningForm from "@/app/hooks/useSigningForm";
 //   isPrivateKeyOnWifFormat,
 // } from "@/app/lib/privateKeysUtilities";
 // import signMessageWithPrivateKey from "@/app/lib/signMessageWithPrivateKey";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // import { listen } from "@ledgerhq/logs";
 import Btc from "@ledgerhq/hw-app-btc";
@@ -45,39 +45,88 @@ import Btc from "@ledgerhq/hw-app-btc";
 function SigningToolWithPrivateKey({transport}: any) {
   const [showDialogSignature, setShowDialogSignature] = useState(false);
   const [zenAddress, setZenAddress] = useState("");
-  // const [signature, setSignature] = useState("");
-  const signature = '';
+  const [signedHash, setSignedHash] = useState("");
+  const [isSigning, setIsSigning] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const form = useSigningForm();
 
   const { destinationAddress } = form.watch();
   const MESSAGE_TO_SIGN = "ZENCLAIM" + destinationAddress;
 
+  const btc = useRef<any>(null);
+
   useEffect(()=> {
-    const getAddress = async() => {
-      const btc = new Btc({ transport });
-      btc.getWalletPublicKey("44'/121'/0'/0/0").then((key)=> {
-        console.log('pubkey', key)
-        setZenAddress(key);
-      });
+    const getAddress = async () => {
+      try {
+        console.log('getAddress')
+        btc.current = new Btc({ transport });
+        let mainchainKey = await btc.current.getWalletPublicKey("44'/121'/0'/0/0");  //receiving key 1
+        // const { address } = await btc.current.getAddress("44'/121'/0'/0/0");
+  
+        console.log(`mainchainKey ${JSON.stringify(mainchainKey)}`);
+        setZenAddress(mainchainKey.bitcoinAddress)
+        // console.log(`address ${address}`)
+      } catch {
+        setTimeout(() => setHasError(true), 3000);
+        console.log('error.....!!!')
+      }
+
+    }
+    console.log(`transport ${JSON.stringify(transport)}`)
+    if (transport) {
+      getAddress();
     }
 
-    getAddress();
+  }, [transport, hasError])
 
-  }, [transport])
-
-  function onSubmit() {
+  const onSubmit = async () => {
     console.log('onSubmit')
+    setIsSigning(true);
+    setShowDialogSignature(true);
 
+    try {
+      // const signature = signMessageWithPrivateKey({
+      //   message: MESSAGE_TO_SIGN,
+      //   compressed: compressed,
+      // });
+      // setSignature(signature);
+      // setShowDialogSignature(true);
 
-    // const signature = signMessageWithPrivateKey({
-    //   message: MESSAGE_TO_SIGN,
-    //   compressed: compressed,
-    // });
-    // setSignature(signature);
-    // setShowDialogSignature(true);
+      //Other keys of the same account
+      //console.log(await btc.getWalletPublicKey("44'/121'/0'/0/1"));  //receiving key 2
+      //console.log(await btc.getWalletPublicKey("44'/121'/0'/1/0"));  //change key 1
+      //console.log(await btc.getWalletPublicKey("44'/121'/0'/1/1"));  //change key 2
+  
+      //message to sign is ZENCLAIM + Horizen2 destination address (with 0x)
+      const MESSAGE_TO_SIGN = "ZENCLAIM"+ destinationAddress;
+      console.log(`message to sign ${MESSAGE_TO_SIGN}`)
+      console.log(`btc, ${JSON.stringify(btc.current)}`)
+
+      //we are testing the signature with the first key of account 0
+      const result = await btc.current.signMessage("44'/121'/0'/0/0", Buffer.from(MESSAGE_TO_SIGN).toString("hex"));
+      console.log(result);
+      var v = result['v'] + 27 + 4;
+
+      
+      var signature = Buffer.from(v.toString(16) + result['r'] + result['s'], 'hex').toString('base64');
+      console.log("Signature : " + signature);
+      setSignedHash("0x" + signature);
+    } catch(e) {
+      console.log(`Error message: ${e}`)
+    } finally {
+      setIsSigning(false);
+    }
   }
 
+  const connectingView = (
+    <div className="text-center space-y-4">
+      <p>Connecting...</p>
+      {hasError && <p>Make sure the Horizen app is selected on your Ledger device and the screen shows "Application is ready". <span className="underline" onClick={() => {setHasError(false)}}>Click here</span> to try again.</p>}
+    </div>
+  );
+
   return (
+    !zenAddress ? connectingView:
     <Card className="min-w-96 max-w-md">
       <CardHeader>
         <CardTitle>Signing Tool for Ledger</CardTitle>
@@ -163,14 +212,14 @@ function SigningToolWithPrivateKey({transport}: any) {
                 />
               </div>
 
-              <Button type="submit">Sign Message</Button>
+              <Button type="submit" disabled={isSigning}>{'Sign Message'}</Button>
             </div>
           </form>
         </Form>
       </CardContent>
 
       <SignatureDialog
-        signature={signature}
+        signature={signedHash}
         open={showDialogSignature}
         setOpen={setShowDialogSignature}
       />

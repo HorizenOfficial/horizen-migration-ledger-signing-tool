@@ -18,9 +18,9 @@ export default function Home() {
   const handleDeviceConnect = async () => {
     console.log('start handle device connect')
     try {
-      //connect to Ledger device with USB protocol
+      // Connect to Ledger device with USB protocol
       const transport = await TransportWebUSB.create();
-      //listen to the events which are sent by the Ledger packages in order to debug the app
+      // Listen to the events which are sent by the Ledger packages in order to debug the app
       listen((log) => console.log(log))
 
       // Set the device to state
@@ -33,9 +33,16 @@ export default function Home() {
     }
   };
 
+  const defaultView = (
+    <div className='text-center space-y-4'>
+      <Button onClick={handleDeviceConnect}>Connect Ledger Device</Button>
+      <p>If you're unable to see your device, make sure your Ledger is unlocked.</p>
+    </div>
+  );
+
   return (
     <main className="flex items-center justify-center h-screen">
-      {device ? <SigningToolWithPrivateKey transport={device}/> : <Button onClick={handleDeviceConnect}>Connect Ledger Device</Button> }
+      {device ? <SigningToolWithPrivateKey transport={device}/> : defaultView}
     </main>
   );
 }
