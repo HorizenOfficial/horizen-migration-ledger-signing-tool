@@ -36,8 +36,17 @@ function SignatureDialog({
     }
   };
 
+  const confirmContent = (
+    <>
+      <DialogTitle></DialogTitle>
+      <DialogDescription>
+        Confirm the message hash on your Ledger device
+      </DialogDescription>
+    </>
+  );
+
   const dialogContent = (
-    !signature ? <DialogDescription>Confirm the message hash on your Ledger device</DialogDescription> : (
+    !signature ? confirmContent : (
       <>
       <DialogHeader>
       <DialogTitle>Your signed message</DialogTitle>

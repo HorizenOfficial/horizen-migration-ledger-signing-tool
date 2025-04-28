@@ -3,15 +3,17 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import {
-  compressedValidator,
   destinationAddressValidator,
-  testnetValidator,
+  derivationPathAccountValidator,
+  derivationPathChangeValidator,
+  derivationPathIndexValidator
 } from "../lib/formValidator";
 
 const formSchema = z.object({
   destinationAddress: destinationAddressValidator,
-  testnet: testnetValidator,
-  compressed: compressedValidator,
+  derivationPathAccount: derivationPathAccountValidator,
+  derivationPathChange: derivationPathChangeValidator,
+  derivationPathIndex: derivationPathIndexValidator,
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -21,8 +23,9 @@ function useSigningForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       destinationAddress: "0x",
-      testnet: false,
-      compressed: true,
+      derivationPathAccount: "",
+      derivationPathChange: "",
+      derivationPathIndex: ""
     },
   });
 
