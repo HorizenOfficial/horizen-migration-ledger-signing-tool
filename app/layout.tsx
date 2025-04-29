@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Signing Tool For Ledger",
-  description: "A simple tool to sign a message with a private key",
+  description: "A simple tool to sign a message with Ledger",
 };
 
 export default function RootLayout({
