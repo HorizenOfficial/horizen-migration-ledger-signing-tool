@@ -10,7 +10,7 @@ import {
 import {
   Form,
   FormControl,
-  // FormDescription,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -24,15 +24,7 @@ import SignatureDialog from "@/app/components/molecules/SignatureDialog";
 import { Separator } from "@/app/components/ui/separator";
 import useSigningForm from "@/app/hooks/useSigningForm";
 import { useEffect, useRef, useState } from "react";
-
-// import { listen } from "@ledgerhq/logs";
 import Btc from "@ledgerhq/hw-app-btc";
-// import zencashjs from "zencashjs";
- 
-// Keep this import if you want to use a Ledger Nano S/X/S Plus with the USB protocol and delete the @ledgerhq/hw-transport-webhid import
-//import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
-// Keep this import if you want to use a Ledger Nano S/X/S Plus with the HID protocol and delete the @ledgerhq/hw-transport-webusb import
-// import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function SigningToolWithPrivateKey({transport}: any) {
@@ -55,11 +47,9 @@ function SigningToolWithPrivateKey({transport}: any) {
   useEffect(()=> {
     const initializeBtc = async () => {
       try {
-        console.log('getAddress')
         btc.current = new Btc({ transport });
-        // Test that Ledger app is open by generating a wallet
+        // Test that Horizen app is open by generating a wallet
         let mainchainKey = await btc.current.getWalletPublicKey("44'/121'/0'/0/0");  
-        console.log(`temp address ${JSON.stringify(mainchainKey)}`);
         setTempAddress(mainchainKey.bitcoinAddress)
       } catch {
         setTimeout(() => setHasError(true), 3000);
@@ -67,7 +57,7 @@ function SigningToolWithPrivateKey({transport}: any) {
       }
 
     }
-    console.log(`transport ${JSON.stringify(transport)}`)
+
     if (transport) {
       initializeBtc();
     }
@@ -82,7 +72,6 @@ function SigningToolWithPrivateKey({transport}: any) {
           setDerivationPath(newDerivationPath);
     
           let mainchainKey = await btc.current.getWalletPublicKey(newDerivationPath);
-          console.log(`mainchainKey ${JSON.stringify(mainchainKey)}`);
           setZenAddress(mainchainKey.bitcoinAddress)
         }
       } catch {
@@ -97,7 +86,7 @@ function SigningToolWithPrivateKey({transport}: any) {
   }, [derivationPathAccount, derivationPathChange, derivationPathIndex]);
 
   const onSubmit = async () => {
-    console.log('onSubmit')
+    setSignedHash("");
     setIsSigning(true);
     setShowDialogSignature(true);
 
@@ -106,17 +95,11 @@ function SigningToolWithPrivateKey({transport}: any) {
       // const MESSAGE_TO_SIGN = "ZENCLAIM" + destinationAddress;
       const MESSAGE_TO_SIGN = "ZT1CLAIM" + destinationAddress;
 
-      console.log(`message to sign ${MESSAGE_TO_SIGN}`)
-      console.log(`btc, ${JSON.stringify(btc.current)}`)
-
       const result = await btc.current.signMessage(derivationPath, Buffer.from(MESSAGE_TO_SIGN).toString("hex"));
-      console.log(result);
-
       const v = result.v + 27 + 4; // Adjust the recovery byte
       const signature = Buffer.from(v.toString(16) + result.r + result.s, 'hex').toString('base64');
 
-      console.log("Signature : " + signature);
-      setSignedHash("0x" + signature);
+      setSignedHash(signature);
     } catch(e) {
       console.log(`Error message: ${e}`)
     } finally {
@@ -132,13 +115,15 @@ function SigningToolWithPrivateKey({transport}: any) {
   );
 
   return (
-    !tempAddress ? connectingView:
+    !tempAddress ? connectingView :
     <Card className="min-w-96 max-w-md">
       <CardHeader>
         <CardTitle>Signing Tool for Ledger</CardTitle>
         <CardDescription>
-          Fill in the form below to sign a message with your Ledger device.
-          Make sure you have both the Bitcoin and Horizen apps installed in your Ledger. The Horizen app must be version 2.2.0 or later.
+          Provide a valid EIP-55 formatted Ethereum destination address and derivation path for your current Ledger wallet account.
+        </CardDescription>
+        <CardDescription>
+          Make sure you have both the Bitcoin and Horizen apps installed on your Ledger. The Horizen app must be version 2.2.0 or later.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -158,6 +143,10 @@ function SigningToolWithPrivateKey({transport}: any) {
                   </FormItem>
                 )}
               />
+              <FormDescription>
+                The derivation path is in the format <br/>
+                m / 44' / 121' / account' / change / index
+              </FormDescription>
               <FormField
                 control={form.control}
                 name="derivationPathAccount"
@@ -170,9 +159,7 @@ function SigningToolWithPrivateKey({transport}: any) {
                           type="number" 
                           {...field} 
                           {...form.register("derivationPathAccount", {
-                            ...(derivationPathAccount !== "" 
-                              ? { valueAsNumber: true }
-                              : {}),
+                            setValueAs: v => v === "" ? undefined : Number(v),
                           })}
                         />
                       </FormControl>
@@ -189,7 +176,11 @@ function SigningToolWithPrivateKey({transport}: any) {
                     <FormLabel>Change</FormLabel>
                     <div>
                       <FormControl>
-                      <Input type="number" {...field} {...form.register("derivationPathChange", derivationPathChange === "" ? {} : { valueAsNumber: true })}/>
+                      <Input type="number" 
+                        {...field} 
+                        {...form.register("derivationPathChange", {
+                          setValueAs: v => v === "" ? undefined : Number(v),
+                        })}/>
                       </FormControl>
                       </div>
                     <FormMessage />
@@ -204,7 +195,11 @@ function SigningToolWithPrivateKey({transport}: any) {
                     <FormLabel>Index</FormLabel>
                     <div>
                       <FormControl>
-                      <Input type="number" {...field} {...form.register("derivationPathIndex", { valueAsNumber: true })}/>
+                      <Input type="number" 
+                        {...field} 
+                        {...form.register("derivationPathIndex", {
+                          setValueAs: v => v === "" ? undefined : Number(v),
+                        })}/>
                       </FormControl>
                       </div>
                     <FormMessage />
@@ -243,7 +238,11 @@ function SigningToolWithPrivateKey({transport}: any) {
                 />
               </div>
 
-              <Button type="submit" disabled={isSigning || (!destinationAddress || destinationAddress === "0x" || derivationPathAccount==="" || derivationPathChange==="" || derivationPathIndex==="" || !zenAddress)}>{'Sign Message'}</Button>
+              <Button 
+                type="submit" 
+                disabled={isSigning || (!destinationAddress || destinationAddress === "0x" || derivationPathAccount==="" || derivationPathChange==="" || derivationPathIndex==="" || !zenAddress)}>
+                  Sign Message
+              </Button>
             </div>
           </form>
         </Form>
