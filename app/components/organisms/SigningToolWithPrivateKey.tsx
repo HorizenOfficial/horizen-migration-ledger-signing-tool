@@ -137,7 +137,8 @@ function SigningToolWithPrivateKey({transport}: any) {
       <CardHeader>
         <CardTitle>Signing Tool for Ledger</CardTitle>
         <CardDescription>
-          Fill in the form below to sign a message with your private key.
+          Fill in the form below to sign a message with your Ledger device.
+          Make sure you have both the Bitcoin and Horizen apps installed in your Ledger. The Horizen app must be version 2.2.0 or later.
         </CardDescription>
       </CardHeader>
       <CardContent>
