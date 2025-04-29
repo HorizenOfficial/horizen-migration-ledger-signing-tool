@@ -12,6 +12,7 @@
     "@hookform/resolvers": "3.10.0",
     "@ledgerhq/device-management-kit": "0.0.0-20250120001116",
     "@ledgerhq/hw-app-btc": "10.5.0",
+    "@ledgerhq/hw-transport-webhid": "6.30.0",
     "@ledgerhq/hw-transport-webusb": "6.29.4",
     "@ledgerhq/logs": "6.12.0",
     "@radix-ui/react-dialog": "1.1.4",

@@ -1,14 +1,7 @@
 "use client";
 import { useState } from "react";
-
 import SigningToolWithPrivateKey from "@/app/components/organisms/SigningToolWithPrivateKey";
-
 import { listen } from "@ledgerhq/logs";
- 
-// Keep this import if you want to use a Ledger Nano S/X/S Plus with the USB protocol and delete the @ledgerhq/hw-transport-webhid import
-//import TransportWebUSB from "@ledgerhq/hw-transport-webhid";
-// Keep this import if you want to use a Ledger Nano S/X/S Plus with the HID protocol and delete the @ledgerhq/hw-transport-webusb import
-import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
 import { Button } from "./components/ui/button";
 
 
@@ -18,8 +11,18 @@ export default function Home() {
   const handleDeviceConnect = async () => {
     console.log('start handle device connect')
     try {
-      // Connect to Ledger device with USB protocol
-      const transport = await TransportWebUSB.create();
+      let transport;
+
+      if ("hid" in navigator) {
+        const TransportWebHID = (await import("@ledgerhq/hw-transport-webhid")).default;
+        transport = await TransportWebHID.create();
+      } else if ("usb" in navigator) {
+        const TransportWebUSB = (await import("@ledgerhq/hw-transport-webusb")).default;
+        transport = await TransportWebUSB.create();
+      } else {
+        throw new Error("This browser does not support WebHID or WebUSB.");
+      }
+
       // Listen to the events which are sent by the Ledger packages in order to debug the app
       listen((log) => console.log(log))
 
