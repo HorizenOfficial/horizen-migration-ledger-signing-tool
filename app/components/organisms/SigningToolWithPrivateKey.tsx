@@ -23,12 +23,6 @@ import { Textarea } from "@/app/components/ui/textarea";
 import SignatureDialog from "@/app/components/molecules/SignatureDialog";
 import { Separator } from "@/app/components/ui/separator";
 import useSigningForm from "@/app/hooks/useSigningForm";
-// import {
-//   deriveZenAddressFromPrivateKey,
-//   isMainnetWif,
-//   isPrivateKeyOnWifFormat,
-// } from "@/app/lib/privateKeysUtilities";
-// import signMessageWithPrivateKey from "@/app/lib/signMessageWithPrivateKey";
 import { useEffect, useRef, useState } from "react";
 
 // import { listen } from "@ledgerhq/logs";
@@ -53,7 +47,8 @@ function SigningToolWithPrivateKey({transport}: any) {
   const form = useSigningForm();
 
   const { destinationAddress, derivationPathAccount, derivationPathChange, derivationPathIndex} = form.watch();
-  const MESSAGE_TO_SIGN = "ZENCLAIM" + destinationAddress;
+  // const MESSAGE_TO_SIGN = "ZENCLAIM" + destinationAddress;
+  const MESSAGE_TO_SIGN = "ZT1CLAIM" + destinationAddress;
 
   const btc = useRef<any>(null);
 
@@ -85,9 +80,6 @@ function SigningToolWithPrivateKey({transport}: any) {
         if (derivationPathAccount !== undefined && derivationPathChange !== undefined && derivationPathIndex !== undefined) {
           let newDerivationPath = `${defaultDerivationPath}${derivationPathAccount}'/${derivationPathChange}/${derivationPathIndex}`
           setDerivationPath(newDerivationPath);
-          console.log(`new Derivation Path = ${newDerivationPath}`)
-          console.log(`new Derivation path = 44'/121'/0'/0/0`)
-          console.log(`new Derivation path matches ${newDerivationPath === "44'/121'/0'/0/0"}`)
     
           let mainchainKey = await btc.current.getWalletPublicKey(newDerivationPath);
           console.log(`mainchainKey ${JSON.stringify(mainchainKey)}`);
@@ -111,15 +103,18 @@ function SigningToolWithPrivateKey({transport}: any) {
 
     try {  
       // Message to sign is ZENCLAIM + Horizen2 destination address (with 0x)
-      const MESSAGE_TO_SIGN = "ZENCLAIM" + destinationAddress;
+      // const MESSAGE_TO_SIGN = "ZENCLAIM" + destinationAddress;
+      const MESSAGE_TO_SIGN = "ZT1CLAIM" + destinationAddress;
+
       console.log(`message to sign ${MESSAGE_TO_SIGN}`)
       console.log(`btc, ${JSON.stringify(btc.current)}`)
 
       const result = await btc.current.signMessage(derivationPath, Buffer.from(MESSAGE_TO_SIGN).toString("hex"));
       console.log(result);
-      var v = result['v'] + 27 + 4;
-      
-      var signature = Buffer.from(v.toString(16) + result['r'] + result['s'], 'hex').toString('base64');
+
+      const v = result.v + 27 + 4; // Adjust the recovery byte
+      const signature = Buffer.from(v.toString(16) + result.r + result.s, 'hex').toString('base64');
+
       console.log("Signature : " + signature);
       setSignedHash("0x" + signature);
     } catch(e) {
