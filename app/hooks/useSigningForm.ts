@@ -23,9 +23,9 @@ function useSigningForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       destinationAddress: "0x",
-      derivationPathAccount: "",
-      derivationPathChange: "",
-      derivationPathIndex: ""
+      derivationPathAccount: undefined,
+      derivationPathChange: undefined,
+      derivationPathIndex: undefined
     },
   });
 

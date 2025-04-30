@@ -1,12 +1,13 @@
 "use client";
 import { useState } from "react";
 import SigningToolWithPrivateKey from "@/app/components/organisms/SigningToolWithPrivateKey";
+import Transport from "@ledgerhq/hw-transport";
 import { listen } from "@ledgerhq/logs";
 import { Button } from "./components/ui/button";
 
 
 export default function Home() {
-  const [device, setDevice] = useState(null);
+  const [device, setDevice] = useState<Transport | null>(null);
 
   const handleDeviceConnect = async () => {
     console.log('start handle device connect')

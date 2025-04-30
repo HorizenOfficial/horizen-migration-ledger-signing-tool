@@ -42,14 +42,14 @@ function SigningToolWithPrivateKey({transport}: any) {
   // const MESSAGE_TO_SIGN = "ZENCLAIM" + destinationAddress;
   const MESSAGE_TO_SIGN = "ZT1CLAIM" + destinationAddress;
 
-  const btc = useRef<any>(null);
+  const btc = useRef<Btc | null>(null);;
 
   useEffect(()=> {
     const initializeBtc = async () => {
       try {
         btc.current = new Btc({ transport });
         // Test that Horizen app is open by generating a wallet
-        let mainchainKey = await btc.current.getWalletPublicKey("44'/121'/0'/0/0");  
+        const mainchainKey = await btc.current.getWalletPublicKey("44'/121'/0'/0/0");  
         setTempAddress(mainchainKey.bitcoinAddress)
       } catch {
         setTimeout(() => setHasError(true), 3000);
@@ -67,11 +67,11 @@ function SigningToolWithPrivateKey({transport}: any) {
   useEffect(() => {
     const getAddress = async() => {
       try {
-        if (derivationPathAccount !== undefined && derivationPathChange !== undefined && derivationPathIndex !== undefined) {
-          let newDerivationPath = `${defaultDerivationPath}${derivationPathAccount}'/${derivationPathChange}/${derivationPathIndex}`
+        if (derivationPathAccount !== undefined && derivationPathChange !== undefined && derivationPathIndex !== undefined && btc.current) {
+          const newDerivationPath = `${defaultDerivationPath}${derivationPathAccount}'/${derivationPathChange}/${derivationPathIndex}`
           setDerivationPath(newDerivationPath);
     
-          let mainchainKey = await btc.current.getWalletPublicKey(newDerivationPath);
+          const mainchainKey = await btc.current.getWalletPublicKey(newDerivationPath);
           setZenAddress(mainchainKey.bitcoinAddress)
         }
       } catch {
@@ -95,7 +95,7 @@ function SigningToolWithPrivateKey({transport}: any) {
       // const MESSAGE_TO_SIGN = "ZENCLAIM" + destinationAddress;
       const MESSAGE_TO_SIGN = "ZT1CLAIM" + destinationAddress;
 
-      const result = await btc.current.signMessage(derivationPath, Buffer.from(MESSAGE_TO_SIGN).toString("hex"));
+      const result = await btc.current!.signMessage(derivationPath, Buffer.from(MESSAGE_TO_SIGN).toString("hex"));
       const v = result.v + 27 + 4; // Adjust the recovery byte
       const signature = Buffer.from(v.toString(16) + result.r + result.s, 'hex').toString('base64');
 
@@ -110,12 +110,12 @@ function SigningToolWithPrivateKey({transport}: any) {
   const connectingView = (
     <div className="text-center space-y-4">
       <p>Connecting...</p>
-      {hasError && <p>Make sure the Horizen app is selected on your Ledger device and the screen shows "Application is ready". <span className="underline" onClick={() => {setHasError(false)}}>Click here</span> to try again.</p>}
+      {hasError && <p>Make sure the Horizen app is selected on your Ledger device and the screen shows &quot;Application is ready&quot;. <span className="underline" onClick={() => {setHasError(false)}}>Click here</span> to try again.</p>}
     </div>
   );
 
   return (
-    !tempAddress ? connectingView :
+    (!tempAddress || !btc.current) ? connectingView :
     <Card className="min-w-96 max-w-md">
       <CardHeader>
         <CardTitle>Signing Tool for Ledger</CardTitle>
@@ -145,7 +145,7 @@ function SigningToolWithPrivateKey({transport}: any) {
               />
               <FormDescription>
                 The derivation path is in the format <br/>
-                m / 44' / 121' / account' / change / index
+                m / 44&apos; / 121&apos; / account&apos; / change / index
               </FormDescription>
               <FormField
                 control={form.control}
@@ -240,7 +240,7 @@ function SigningToolWithPrivateKey({transport}: any) {
 
               <Button 
                 type="submit" 
-                disabled={isSigning || (!destinationAddress || destinationAddress === "0x" || derivationPathAccount==="" || derivationPathChange==="" || derivationPathIndex==="" || !zenAddress)}>
+                disabled={isSigning || (!destinationAddress || destinationAddress === "0x" || !zenAddress)}>
                   Sign Message
               </Button>
             </div>
