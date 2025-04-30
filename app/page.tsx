@@ -41,7 +41,7 @@ export default function Home() {
     <div className='text-center space-y-4'>
       <Button onClick={handleDeviceConnect}>Connect Ledger Device</Button>
       <p>If you are unable to see your device, make sure your Ledger is unlocked.</p>
-      <p>Please ensure you are using Horizen App version 2.2.0 or later. We recommend updating to the latest version.</p>
+      <p>Please ensure you are using Horizen App version 2.4.1 or later. We recommend updating to the latest version.</p>
     </div>
   );
 

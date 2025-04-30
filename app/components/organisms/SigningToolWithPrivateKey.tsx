@@ -25,6 +25,7 @@ import { Separator } from "@/app/components/ui/separator";
 import useSigningForm from "@/app/hooks/useSigningForm";
 import { useEffect, useRef, useState } from "react";
 import Btc from "@ledgerhq/hw-app-btc";
+import { Check, Copy } from "lucide-react";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function SigningToolWithPrivateKey({transport}: any) {
@@ -36,6 +37,7 @@ function SigningToolWithPrivateKey({transport}: any) {
   const [signedHash, setSignedHash] = useState("");
   const [isSigning, setIsSigning] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [copied, setCopied] = useState(false);
   const form = useSigningForm();
 
   const { destinationAddress, derivationPathAccount, derivationPathChange, derivationPathIndex} = form.watch();
@@ -123,7 +125,7 @@ function SigningToolWithPrivateKey({transport}: any) {
           Provide a valid EIP-55 formatted Ethereum destination address and derivation path for your current Ledger wallet account.
         </CardDescription>
         <CardDescription>
-          Make sure you have both the Bitcoin and Horizen apps installed on your Ledger. The Horizen app must be version 2.2.0 or later.
+          Make sure you have both the Bitcoin and Horizen apps installed on your Ledger. The Horizen app must be version 2.4.1 or later.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -219,7 +221,18 @@ function SigningToolWithPrivateKey({transport}: any) {
               </div>
 
               <div>
-                <Label htmlFor="zenAddress">Your ZEN address</Label>
+                <div className="flex">
+                  <Label htmlFor="zenAddress">Your ZEN address</Label>
+                  { copied ? <Check className="ml-2 h-3 w-3 text-gray-500"/> : 
+                    <Copy className="ml-2 h-3 w-3 text-gray-500 hover:text-black cursor-pointer" 
+                      onClick={() => {
+                        navigator.clipboard.writeText(zenAddress).then(()=> {
+                          setCopied(true);
+                          setTimeout(() => setCopied(false), 1000);
+                        })
+                      }}/>
+                  }
+                </div>
                 <Textarea
                   id="zenAddress"
                   disabled
