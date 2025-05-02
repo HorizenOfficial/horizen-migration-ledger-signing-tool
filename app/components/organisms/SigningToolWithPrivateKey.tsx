@@ -23,7 +23,7 @@ import { Textarea } from "@/app/components/ui/textarea";
 import SignatureDialog from "@/app/components/molecules/SignatureDialog";
 import { Separator } from "@/app/components/ui/separator";
 import useSigningForm from "@/app/hooks/useSigningForm";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Btc from "@ledgerhq/hw-app-btc";
 import { Check, Copy } from "lucide-react";
 
@@ -41,8 +41,8 @@ function SigningToolWithPrivateKey({transport}: any) {
   const form = useSigningForm();
 
   const { destinationAddress, derivationPathAccount, derivationPathChange, derivationPathIndex} = form.watch();
-  // const MESSAGE_TO_SIGN = "ZENCLAIM" + destinationAddress;
-  const MESSAGE_TO_SIGN = "ZT1CLAIM" + destinationAddress;
+  // const MESSAGE_TO_SIGN = useMemo(() => "ZENCLAIM" + destinationAddress, [destinationAddress]);
+  const MESSAGE_TO_SIGN = useMemo(() => "ZT1CLAIM" + destinationAddress, [destinationAddress]);
 
   const btc = useRef<Btc | null>(null);;
 
@@ -92,11 +92,7 @@ function SigningToolWithPrivateKey({transport}: any) {
     setIsSigning(true);
     setShowDialogSignature(true);
 
-    try {  
-      // Message to sign is ZENCLAIM + Horizen2 destination address (with 0x)
-      // const MESSAGE_TO_SIGN = "ZENCLAIM" + destinationAddress;
-      const MESSAGE_TO_SIGN = "ZT1CLAIM" + destinationAddress;
-
+    try {
       const result = await btc.current!.signMessage(derivationPath, Buffer.from(MESSAGE_TO_SIGN).toString("hex"));
       const v = result.v + 27 + 4; // Adjust the recovery byte
       const signature = Buffer.from(v.toString(16) + result.r + result.s, 'hex').toString('base64');
