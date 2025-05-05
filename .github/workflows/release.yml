@@ -29,11 +29,11 @@ jobs:
       - name: Create zip file
         run: |
           cd out
-          zip -r ../signing-tool-ledger.zip .
+          zip -r ../ledger-signing-tool.zip .
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: signing-tool-ledger.zip
-          repository: HorizenOfficial/signing-tool-ledger
+          files: ledger-signing-tool.zip
+          repository: HorizenOfficial/ledger-signing-tool
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
