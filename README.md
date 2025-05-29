@@ -21,7 +21,7 @@ The **Signing Tool for Ledger** is a tool designed to generate cryptographic sig
 1. Clone the repository:
 
    ```bash
-   git@github.com:HorizenOfficial/ledger-signing-tool.git
+   git clone https://github.com/HorizenOfficial/horizen-migration-ledger-signing-tool.git
    cd ledger-signing-tool
    ```
 
