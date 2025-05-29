@@ -34,6 +34,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: ledger-signing-tool.zip
-          repository: HorizenOfficial/ledger-signing-tool
+          repository: HorizenOfficial/horizen-migration-ledger-signing-tool
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
