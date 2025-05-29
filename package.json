@@ -1,6 +1,6 @@
 {
   "name": "ledger-signing-tool",
-  "version": "1.0.0",
+  "version": "1.0.0-ZT3CLAIM",
   "private": true,
   "scripts": {
     "dev": "next dev",
