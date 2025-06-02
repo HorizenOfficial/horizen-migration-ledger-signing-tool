@@ -35,5 +35,6 @@ jobs:
         with:
           files: ledger-signing-tool.zip
           repository: HorizenOfficial/horizen-migration-ledger-signing-tool
+          body: "For security purposes, download the tool and run it offline. Download and extract the static files from ledger-signing-tool.zip, then open index.html locally."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
