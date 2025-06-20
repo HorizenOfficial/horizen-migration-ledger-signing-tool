@@ -42,7 +42,7 @@ function SigningToolWithPrivateKey({transport}: any) {
 
   const { destinationAddress, derivationPathAccount, derivationPathChange, derivationPathIndex} = form.watch();
   // const MESSAGE_TO_SIGN = useMemo(() => "ZENCLAIM" + destinationAddress, [destinationAddress]);
-  const MESSAGE_TO_SIGN = useMemo(() => "tZENCLAIM" + destinationAddress, [destinationAddress]);
+  const MESSAGE_TO_SIGN = useMemo(() => "HBETACLAIM" + destinationAddress, [destinationAddress]);
 
   const btc = useRef<Btc | null>(null);;
 
