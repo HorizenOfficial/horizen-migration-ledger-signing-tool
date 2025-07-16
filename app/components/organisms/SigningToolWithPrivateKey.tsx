@@ -54,7 +54,7 @@ function SigningToolWithPrivateKey({transport}: any) {
         setTempAddress(mainchainKey.bitcoinAddress)
       } catch {
         setTimeout(() => setHasError(true), 3000);
-        console.log('error.....!!!')
+        console.log('error!')
       }
 
     }
@@ -105,7 +105,7 @@ function SigningToolWithPrivateKey({transport}: any) {
   }
 
   const connectingView = (
-    <div className="text-center space-y-4">
+    <div className="flex flex-col items-center justify-center text-center space-y-4 h-screen">
       <p>Connecting...</p>
       {hasError && <p>Make sure the Horizen app is selected on your Ledger device and the screen shows &quot;Application is ready&quot;. <span className="underline" onClick={() => {setHasError(false)}}>Click here</span> to try again.</p>}
     </div>
@@ -113,155 +113,158 @@ function SigningToolWithPrivateKey({transport}: any) {
 
   return (
     (!tempAddress || !btc.current) ? connectingView :
-    <Card className="min-w-96 max-w-md">
-      <CardHeader>
-        <CardTitle>Signing Tool for Ledger</CardTitle>
-        <CardDescription>
-          Provide a valid EIP-55 formatted Ethereum destination address and derivation path for your current Ledger wallet account.
-        </CardDescription>
-        <CardDescription>
-          Make sure you have both the Bitcoin and Horizen apps installed on your Ledger. The Horizen app must be version 2.4.1 or later.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div className="grid w-full items-center gap-4">
-              <FormField
-                control={form.control}
-                name="destinationAddress"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Destination Address</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Destination Address..." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormDescription>
-                The derivation path is in the format <br/>
-                m / 44&apos; / 121&apos; / account&apos; / change / index
-              </FormDescription>
-              <FormField
-                control={form.control}
-                name="derivationPathAccount"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Account</FormLabel>
-                    <div>
+      <Card className="h-full min-w-96 max-w-md overflow-auto mt-8 mb-8">
+        <CardHeader>
+          <CardTitle>Signing Tool for Ledger</CardTitle>
+          <CardDescription>
+            Provide a valid EIP-55 formatted Ethereum destination address and derivation path for your current Ledger wallet account.
+          </CardDescription>
+          <CardDescription>
+            Make sure you have both the Bitcoin and Horizen apps installed on your Ledger. The Horizen app must be version 2.4.1 or later.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <div className="grid w-full items-center gap-4">
+                <FormField
+                  control={form.control}
+                  name="destinationAddress"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Destination Address</FormLabel>
+                      <FormDescription>
+                        Destination address is where ZEN will be sent to, make sure you are the owner of this address. Do not use exchange deposit addresses!
+                      </FormDescription>
                       <FormControl>
-                        <Input 
-                          type="number" 
+                        <Input placeholder="Destination Address..." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormDescription>
+                  The derivation path is in the format <br/>
+                  m / 44&apos; / 121&apos; / account&apos; / change / index
+                </FormDescription>
+                <FormField
+                  control={form.control}
+                  name="derivationPathAccount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Account</FormLabel>
+                      <div>
+                        <FormControl>
+                          <Input 
+                            type="number" 
+                            {...field} 
+                            {...form.register("derivationPathAccount", {
+                              setValueAs: v => v === "" ? undefined : Number(v),
+                            })}
+                          />
+                        </FormControl>
+                        </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="derivationPathChange"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Change</FormLabel>
+                      <div>
+                        <FormControl>
+                        <Input type="number" 
                           {...field} 
-                          {...form.register("derivationPathAccount", {
+                          {...form.register("derivationPathChange", {
                             setValueAs: v => v === "" ? undefined : Number(v),
-                          })}
-                        />
-                      </FormControl>
-                      </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="derivationPathChange"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Change</FormLabel>
-                    <div>
-                      <FormControl>
-                      <Input type="number" 
-                        {...field} 
-                        {...form.register("derivationPathChange", {
-                          setValueAs: v => v === "" ? undefined : Number(v),
-                        })}/>
-                      </FormControl>
-                      </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="derivationPathIndex"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Index</FormLabel>
-                    <div>
-                      <FormControl>
-                      <Input type="number" 
-                        {...field} 
-                        {...form.register("derivationPathIndex", {
-                          setValueAs: v => v === "" ? undefined : Number(v),
-                        })}/>
-                      </FormControl>
-                      </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <Separator />
-              <div>
-                <Label htmlFor="derivationPath">Derivation Path</Label>
-                <Textarea
-                  id="derivationPath"
-                  disabled
-                  placeholder={`m/${defaultDerivationPath}`}
-                  value={`m/${derivationPath}`}
+                          })}/>
+                        </FormControl>
+                        </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
+                <FormField
+                  control={form.control}
+                  name="derivationPathIndex"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Index</FormLabel>
+                      <div>
+                        <FormControl>
+                        <Input type="number" 
+                          {...field} 
+                          {...form.register("derivationPathIndex", {
+                            setValueAs: v => v === "" ? undefined : Number(v),
+                          })}/>
+                        </FormControl>
+                        </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <div>
-                <div className="flex">
-                  <Label htmlFor="zenAddress">Your ZEN address</Label>
-                  { copied ? <Check className="ml-2 h-3 w-3 text-gray-500"/> : 
-                    <Copy className="ml-2 h-3 w-3 text-gray-500 hover:text-black cursor-pointer" 
-                      onClick={() => {
-                        navigator.clipboard.writeText(zenAddress).then(()=> {
-                          setCopied(true);
-                          setTimeout(() => setCopied(false), 1000);
-                        })
-                      }}/>
-                  }
+                <Separator />
+                <div>
+                  <Label htmlFor="derivationPath">Derivation Path</Label>
+                  <Textarea
+                    id="derivationPath"
+                    disabled
+                    placeholder={`m/${defaultDerivationPath}`}
+                    value={`m/${derivationPath}`}
+                  />
                 </div>
-                <Textarea
-                  id="zenAddress"
-                  disabled
-                  placeholder="ZEN Address"
-                  value={zenAddress}
-                />
+
+                <div>
+                  <div className="flex">
+                    <Label htmlFor="zenAddress">Your ZEN address</Label>
+                    { copied ? <Check className="ml-2 h-3 w-3 text-gray-500"/> : 
+                      <Copy className="ml-2 h-3 w-3 text-gray-500 hover:text-black cursor-pointer" 
+                        onClick={() => {
+                          navigator.clipboard.writeText(zenAddress).then(()=> {
+                            setCopied(true);
+                            setTimeout(() => setCopied(false), 1000);
+                          })
+                        }}/>
+                    }
+                  </div>
+                  <Textarea
+                    id="zenAddress"
+                    disabled
+                    placeholder="ZEN Address"
+                    value={zenAddress}
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="message">Message to Sign</Label>
+                  <Textarea
+                    id="message"
+                    disabled
+                    placeholder="Message To Sign"
+                    value={MESSAGE_TO_SIGN}
+                  />
+                </div>
+
+                <Button 
+                  type="submit" 
+                  disabled={isSigning || (!destinationAddress || destinationAddress === "0x" || !zenAddress)}>
+                    Sign Message
+                </Button>
               </div>
+            </form>
+          </Form>
+        </CardContent>
 
-              <div>
-                <Label htmlFor="message">Message to Sign</Label>
-                <Textarea
-                  id="message"
-                  disabled
-                  placeholder="Message To Sign"
-                  value={MESSAGE_TO_SIGN}
-                />
-              </div>
-
-              <Button 
-                type="submit" 
-                disabled={isSigning || (!destinationAddress || destinationAddress === "0x" || !zenAddress)}>
-                  Sign Message
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </CardContent>
-
-      <SignatureDialog
-        signature={signedHash}
-        open={showDialogSignature}
-        setOpen={setShowDialogSignature}
-      />
-    </Card>
+        <SignatureDialog
+          signature={signedHash}
+          open={showDialogSignature}
+          setOpen={setShowDialogSignature}
+        />
+      </Card>
   );
 }
 
