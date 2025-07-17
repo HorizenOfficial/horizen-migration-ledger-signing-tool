@@ -38,15 +38,17 @@ export default function Home() {
   };
 
   const defaultView = (
-    <div className='text-center space-y-4'>
-      <Button onClick={handleDeviceConnect}>Connect Ledger Device</Button>
-      <p>If you are unable to see your device, make sure your Ledger is unlocked.</p>
-      <p>Please ensure you are using Horizen App version 2.4.1 or later. We recommend updating to the latest version.</p>
+    <div className='flex items-center justify-center h-screen'>
+      <div className='text-center space-y-4'>
+        <Button onClick={handleDeviceConnect}>Connect Ledger Device</Button>
+        <p>If you are unable to see your device, make sure your Ledger is unlocked.</p>
+        <p>Please ensure you are using Horizen App version 2.4.1 or later. We recommend updating to the latest version.</p>
+      </div>
     </div>
   );
 
   return (
-    <main className="flex items-center justify-center h-screen">
+    <main className="flex flex-col items-center justify-center">
       {device ? <SigningToolWithPrivateKey transport={device}/> : defaultView}
     </main>
   );
