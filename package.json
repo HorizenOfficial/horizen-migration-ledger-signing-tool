@@ -1,6 +1,6 @@
 {
   "name": "ledger-signing-tool",
-  "version": "1.0.0-ZENCLAIM",
+  "version": "1.0.1-ZENCLAIM",
   "private": true,
   "scripts": {
     "dev": "next dev",
