@@ -93,8 +93,12 @@ function SigningToolWithPrivateKey({transport}: any) {
 
     try {
       const result = await btc.current!.signMessage(derivationPath, Buffer.from(MESSAGE_TO_SIGN).toString("hex"));
-      const v = result.v + 27 + 4; // Adjust the recovery byte
-      const signature = Buffer.from(v.toString(16) + result.r + result.s, 'hex').toString('base64');
+      // Ensure r and s are 64 hex characters (32 bytes)
+      const r = result.r.padStart(64, '0');
+      const s = result.s.padStart(64, '0');
+      // Adjust the recovery byte
+      const v = result.v + 27 + 4; 
+      const signature = Buffer.from(v.toString(16) + r + s, 'hex').toString('base64');
 
       setSignedHash(signature);
     } catch(e) {
