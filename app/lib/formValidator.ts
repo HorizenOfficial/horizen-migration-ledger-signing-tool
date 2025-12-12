@@ -1,7 +1,11 @@
-import { isAddress } from "viem";
+import { getAddress, isAddress } from "viem";
 import { z } from "zod";
 
-const destinationAddressValidator = z.string().refine(isAddress, {
+const destinationAddressValidator = z.string().refine(  
+  (addr) => {
+  if (!isAddress(addr)) return false;          // basic validation
+  return addr === getAddress(addr);            // checksum validation
+}, {
   message: "Destination address is not a valid EIP-55 formatted Ethereum address",
 });
 
