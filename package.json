@@ -1,6 +1,6 @@
 {
   "name": "ledger-signing-tool",
-  "version": "1.0.1-ZENCLAIM",
+  "version": "1.1.0-ZENCLAIM",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -23,9 +23,9 @@
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "lucide-react": "0.471.1",
-    "next": "15.3.1",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
+    "next": "15.3.8",
+    "react": "19.0.3",
+    "react-dom": "19.0.3",
     "react-hook-form": "7.54.2",
     "tailwind-merge": "2.6.0",
     "tailwindcss-animate": "1.0.7",
