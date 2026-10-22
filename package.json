@@ -2,6 +2,9 @@
   "name": "ledger-signing-tool",
   "version": "1.1.0-ZENCLAIM",
   "private": true,
+  "engines": {
+    "node": ">=24.22.1 <25"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
